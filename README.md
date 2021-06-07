@@ -1,7 +1,7 @@
 # MIVAE
 
 Code for our paper "Non-I.I.D. Multi-Instance Learning for Predicting Instance and Bag Labels using Variational Autoencoder" 
-To appear in Proceedings of the 30th International Joint Conference on Artificial Intelligence (IJCAI-21).
+To appear in the _Proceedings of the 30th International Joint Conference on Artificial Intelligence_ (**IJCAI-21**).
 
 The preprint of this paper can be found at https://arxiv.org/abs/2105.01276
 
