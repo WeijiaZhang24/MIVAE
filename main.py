@@ -14,7 +14,7 @@ from scipy.io import loadmat
 from sklearn.model_selection import RepeatedStratifiedKFold, train_test_split, KFold
 from sklearn.metrics import accuracy_score, roc_auc_score, average_precision_score
  
-from model.gmlmivae_insfirt_attention_conv_Cell_flat import mlmivae_supervised
+from model.mivae import mlmivae_supervised
  
 def get_loss(model, bags, bag_index, bag_label):
     with torch.no_grad():
