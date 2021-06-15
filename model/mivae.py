@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
 from utils import map_bag_embeddings, reorder_y
-from utils import   accumulate_group_evidence_sum, accumulate_group_evidence
-from utils import group_wise_reparameterize, mse_loss, group_wise_reparameterize_each
+from utils import   accumulate_group_evidence_sum
 import torch.nn.functional as F
 import torch.distributions as dist
 import numpy as np
@@ -42,8 +41,6 @@ class decoder_x(nn.Module):
     # p(x| z_I, z_B)
     def __init__(self, instance_latent_dim, bag_latent_dim, feature_dim, hidden_dim, hidden_layer):
         super(decoder_x, self).__init__()
-        # self.fc1 = nn.Sequential(nn.Linear(instance_latent_dim + bag_latent_dim, 64*5*5, bias= True), 
-        #                           nn.ReLU())
         self.fc1 = nn.Sequential(nn.Linear(instance_latent_dim + bag_latent_dim, feature_dim, bias= True), nn.ReLU(),
                                   nn.Linear(feature_dim, 512), nn.ReLU(),
                                   nn.Linear(512, 48*5*5)
@@ -95,8 +92,6 @@ class encoder_x(nn.Module):
         x = x.squeeze(0)
         H = self.feature_extractor_part1(x)
         H = H.flatten(start_dim = 1)
-        # H = H.view(-1, 48 * 5 * 5)
-        # H = self.feature_extractor_part2(H)  # NxL    
         
         instance_latent_space_mu = self.instance_mu(H)
         instance_latent_space_logvar = self.instance_logvar(H)
@@ -132,8 +127,6 @@ class encoder_y(nn.Module):
     def forward(self, x):
         x = x.squeeze(0)
         H = self.feature_extractor_part1(x).flatten(start_dim = 1)
-        # H = H.view(-1, 48 * 5 * 5)
-        # H = self.feature_extractor_part2(H)  # NxL   
         
         bag_latent_space_mu = self.bag_mu(H)
         bag_latent_space_logvar = self.bag_logvar(H) 
@@ -207,7 +200,6 @@ class mlmivae_supervised(nn.Module):
         bag_latent_embeddings = map_bag_embeddings(bag, zy_q, bag_idx, list_g)
         n_groups = grouped_mu.size(0)
 
-        # kl-divergence error for bag latent space should be KL( q(z_y|x) || p(z_y|y) )
         #reorder by the same order as bag_latent_embeddings
         reordered_y = reorder_y(bag_label, bag_idx, list_g)
         one_hot = torch.nn.functional.one_hot(reordered_y.to(torch.long),2)
@@ -270,13 +262,3 @@ class mlmivae_supervised(nn.Module):
             Y_prob = torch.sigmoid(Y_prob)
             Y_hat= torch.ge(Y_prob, 0.5).float()
         return Y_hat, attention
-
-    #         # bag_latent_embeddings = map_bag_embeddings(bag, zy_q, bag_idx, list_bag)
-    #         Y_prob, attention = self.auxiliary_y_fixed(ins_loc, bag_mu, bag_idx)
-
-    #         A = A + attention
-    #         Y_prob = torch.sigmoid(Y_prob)
-    #         Y_hat= torch.ge(Y_prob, 0.5).float()
-    #         count = count + Y_hat
-    #         labels = [int(p > threshold) for p in count]
-    #     return labels, A
