@@ -78,12 +78,6 @@ class encoder_x(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(2, 2)
         )
-        self.feature_extractor_part2 = nn.Sequential(
-            nn.Linear(48 * 5 * 5, 512), 
-            nn.ReLU(),
-            nn.Linear(512, hidden_dim),
-            nn.ReLU(), 
-        ) 
         self.instance_mu = nn.Linear(in_features=48 * 5 * 5, out_features=instance_latent_dim, bias=True)
         self.instance_logvar = nn.Sequential(nn.Linear(in_features=48 * 5 * 5, 
                                                        out_features=instance_latent_dim, bias=True))
@@ -114,12 +108,6 @@ class encoder_y(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(2, 2)
         )
-        self.feature_extractor_part2 = nn.Sequential(
-            nn.Linear(48 * 5 * 5, 512), 
-            nn.ReLU(),
-            nn.Linear(512, hidden_dim),
-            nn.ReLU(),
-        )     
         self.bag_mu = nn.Linear(in_features=48 * 5 * 5, out_features=bag_latent_dim, bias=True)
         self.bag_logvar = nn.Sequential(nn.Linear(in_features=48 * 5 * 5, 
                                                   out_features=bag_latent_dim, bias=True))
