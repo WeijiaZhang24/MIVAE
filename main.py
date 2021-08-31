@@ -94,25 +94,21 @@ def training_procedure(FLAGS, input_dim, dataset,rand_state):
         KL_ins_epoch = KL_ins_epoch / (train_data.__len__()/FLAGS.batch_size)
         KL_bag_epoch = KL_bag_epoch / (train_data.__len__()/FLAGS.batch_size)
  
-        test_bag, test_bag_idx, test_bag_label, test_instance_label = next(iter(testloader))
-        epoch_test_acc, epoch_test_auc, epoch_test_aucpr = get_accuracy(model, test_bag.float(), test_bag_idx, test_bag_label, test_instance_label)
- 
         val_bag, val_bag_idx,val_bag_label, val_instance_label = next(iter(valloader))
         epoch_val_acc, epoch_val_auc, epoch_val_aucpr = get_accuracy(model, val_bag.float(), val_bag_idx, val_bag_label, val_instance_label)
         elbo, val_auxiliary_y, val_recon, val_KL_zx, val_KL_zy = get_loss(model, val_bag.float(), val_bag_idx, val_bag_label)
         epoch_val_loss = val_recon + val_auxiliary_y
 
         loss_epoch = epoch_val_loss
-        acc_epoch = epoch_test_acc
+        acc_epoch = epoch_val_acc
         if loss_epoch < best_loss:
             best_y_acc = acc_epoch
             best_loss = loss_epoch
             torch.save(model,'path to model')
         elif loss_epoch == best_loss:
-            if acc_epoch > best_y_acc:
-                best_y_acc = acc_epoch
-                best_loss = loss_epoch
-                torch.save(model, 'path to model')
+            best_y_acc = acc_epoch
+            best_loss = loss_epoch
+            torch.save(model, 'path to model')
         
         if ((epoch + 1) % 1 ==0):
             print('Epoch #' + str(epoch+1) + '..............................................')
@@ -121,6 +117,7 @@ def training_procedure(FLAGS, input_dim, dataset,rand_state):
             print("Val ACC {:.3f}, Val AUC  {:.3f}, Val AUC-PR {:3f}".format (epoch_val_acc, epoch_val_auc, epoch_val_aucpr))
     
     model = torch.load('path to model')
+    test_bag, test_bag_idx, test_bag_label, test_instance_label = next(iter(testloader))
     test_acc, test_auc, test_aucpr = get_accuracy(model, test_bag.float(), test_bag_idx, test_bag_label, test_instance_label)
     print("ACC test: {:.4f}, AUC test: {:.4f}, AUC-PR test: {:.4f}" \
                   .format(test_acc, test_auc, test_aucpr))
