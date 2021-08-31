@@ -1,9 +1,9 @@
 # MIVAE
 
 Code for our paper "Non-I.I.D. Multi-Instance Learning for Predicting Instance and Bag Labels using Variational Autoencoder" 
-To appear in the _Proceedings of the 30th International Joint Conference on Artificial Intelligence_ (**IJCAI-2021**).
+In _Proceedings of the 30th International Joint Conference on Artificial Intelligence_ (**IJCAI-2021**), pages 3377-3383.
 
-The preprint of this paper can be found at https://arxiv.org/abs/2105.01276
+This paper can be found at https://www.ijcai.org/proceedings/2021/465
 
 The Colon Cancer dataset can be downloaded from https://warwick.ac.uk/fac/sci/dcs/research/tia/data/crchistolabelednucleihe/
 
