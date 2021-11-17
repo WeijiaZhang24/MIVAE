@@ -127,7 +127,7 @@ class auxiliary_y_fixed(nn.Module):
                                     nn.Linear(512,512), nn.ReLU(),nn.Dropout(),
                                     nn.Linear(512,1))
     def forward(self, z_ins, z_bag, bag_idx, bag_latent_embeddings):
-        z = torch.cat((z_ins,z_bag),1)
+        z = torch.cat((z_ins,bag_latent_embeddings),1)
         loc = self.fc(z)
         bags = (bag_idx).unique()
         M = torch.zeros((z_bag.shape[0], 1))
