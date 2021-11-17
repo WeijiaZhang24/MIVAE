@@ -123,11 +123,12 @@ class encoder_y(nn.Module):
 class auxiliary_y_fixed(nn.Module):
     def __init__(self, instance_latent_dim, bag_latent_dim, feature_dim, hidden_dim, hidden_layer, num_classes = 2):
         super(auxiliary_y_fixed, self).__init__()
-        self.fc_ins = nn.Sequential(nn.Linear(instance_latent_dim, 512), nn.ReLU(), nn.Dropout(),
+        self.fc = nn.Sequential(nn.Linear(bag_latent_dim+instance_latent_dim, 512), nn.ReLU(), nn.Dropout(),
                                     nn.Linear(512,512), nn.ReLU(),nn.Dropout(),
                                     nn.Linear(512,1))
     def forward(self, z_ins, z_bag, bag_idx, bag_latent_embeddings):
-        loc_ins= self.fc_ins(z_ins)
+        z = torch.cat((z_ins,z_bag),1)
+        loc = self.fc(z)
         bags = (bag_idx).unique()
         M = torch.zeros((z_bag.shape[0], 1))
         for iter_id, bag in enumerate(bags):
@@ -135,10 +136,10 @@ class auxiliary_y_fixed(nn.Module):
             instances_bag = bag_idx.eq(bag_id).nonzero().squeeze()
             if instances_bag.numel()>0:
                 if instances_bag.numel()>1:
-                    M[iter_id, :] = torch.max(loc_ins[instances_bag])
+                    M[iter_id, :] = torch.max(loc[instances_bag])
                 else:
-                    M[iter_id, :] = loc_ins[instances_bag]
-        return M, M, M, loc_ins
+                    M[iter_id, :] = loc[instances_bag]
+        return M, M, M, loc
 
 class mlmivae_supervised(nn.Module):
     def __init__(self, args):
